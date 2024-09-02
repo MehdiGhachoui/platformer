@@ -28,6 +28,11 @@ love.update = function (dt)
   if love.keyboard.isDown("left") then
     player.body:setX(px - 100*dt)
   end
+
+  if love.keyboard.isDown("space") then
+    local x1,x2,y1,y2 = player.fixture:getBoundingBox()
+
+  end
 end
 
 love.draw = function ()
@@ -37,25 +42,42 @@ end
 
 love.keypressed = function (key) -- pressed once
   if key == "up" then
-    player.body:applyLinearImpulse(0,-1000) -- be aware of the double/infinit jumps
+    -- we want to query right underneath the player to see if he can jump (grounded)
+    local data = queryBoxArea(world,player.body:getX(),player.body:getY(),player.body:getX()+50,player.body:getY()+50,"wall")
+    if #data > 0 then
+      player.body:applyLinearImpulse(0,-1000)
+    end
   end
 end
 
 begin_contact = function (a,b,col) -- gets called when two fixtures start overlapping (two objects collide).
 
   local x,y = col:getNormal()
-  print("collision between "..a:getUserData().." and "..b:getUserData().." with vector normal of x:"..x..",y:"..y)
+  --print("collision between "..a:getUserData().." and "..b:getUserData().." with vector normal of x:"..x..",y:"..y)
 end
 
 end_contact = function (a,b,col) -- gets called when two fixtures stop overlapping (two objects disconnect).
 
-  print("end of collision between"..a:getUserData().." and "..b:getUserData())
+  --print("end of collision between"..a:getUserData().." and "..b:getUserData())
 end
 
 pre_solve = function (a,b,col) --  is called just before a frame is resolved for a current collision (while the objects are touching)
-   print("object "..a:getUserData().." and "..b:getUserData().." are touching ")
+  --print("object "..a:getUserData().." and "..b:getUserData().." are touching ")
 end
 
 post_solve = function (a,b,col) -- is called just after a frame is resolved for a current collision.
 
+end
+
+function queryBoxArea(world,x1,y1,x2,y2,collider)
+  -- local col_1,col_2 = table.unpack(colliders)
+  local colls = {}
+  local function callback(fixture)
+    if fixture:getUserData() == collider then
+      table.insert(colls,fixture:getUserData())
+    end
+    return true
+  end
+  world:queryBoundingBox(x1,y1,x2,y2,callback) --
+  return colls
 end
