@@ -25,14 +25,17 @@ love.load = function ()
   animations.run = anim8.newAnimation(grid('1-15',3),0.05)
 
   player.body = love.physics.newBody(world,300,100,"dynamic")
-  player.shape = love.physics.newRectangleShape(0,0,50,50) -- x,y  within the body -up-
+  player.shape = love.physics.newRectangleShape(50,100) -- only  need the width and height , create the offset at center
   player.fixture = love.physics.newFixture(player.body,player.shape)
   player.body:setFixedRotation(true) -- so the player doesn't rotate when leaving the platform
   player.fixture:setUserData("player")
   player.animation = animations.idle
+  player.direction = 1
+  player.isMoving = false
+  player.grounded = true
 
   wall.body = love.physics.newBody(world,300,300,"static") -- not affected by gravity
-  wall.shape = love.physics.newRectangleShape(0,0,200,50) -- x,y  within the body -up-
+  wall.shape = love.physics.newRectangleShape(200,50) --- only  need the width and height , create the offset at center
   wall.fixture = love.physics.newFixture(wall.body,wall.shape)
   wall.fixture:setUserData("wall")
 end
@@ -40,37 +43,55 @@ end
 love.update = function (dt)
   world:update(dt)
   world:setCallbacks(begin_contact,end_contact,pre_solve,post_solve)
+  player.isMoving = false
+
+  -- we want to query right underneath the player to see if he can jump (grounded)
+  local data = queryBoxArea(world,player.body:getX()-25,player.body:getY()+50,player.body:getX()+25,player.body:getY()+50,"wall") -- offset already at the center
+  if #data > 0 then
+    player.grounded = true
+  else
+    player.grounded = false
+  end
 
   local px,py = player.body:getPosition()
   if love.keyboard.isDown("right") then
     player.body:setX(px + 100*dt)
+    player.direction = 1
+    player.isMoving = true
   end
   if love.keyboard.isDown("left") then
     player.body:setX(px - 100*dt)
+    player.direction = -1
+    player.isMoving = true
   end
 
-  if love.keyboard.isDown("space") then
-    local x1,x2,y1,y2 = player.fixture:getBoundingBox()
+  if player.grounded then
+    if player.isMoving then
+      player.animation = animations.run
+    else
+      player.animation = animations.idle
+    end
+  else
+    player.animation = animations.jump
   end
+
 
   player.animation:update(dt)
 end
 
 love.draw = function ()
-  -- scale (sx,sy) is by percentage
-  player.animation:draw(sprites.player_sheet,10,10,nil,0.25)
 
-  -- love.graphics.polygon("line",player.body:getWorldPoints(player.shape:getPoints()))
-  -- love.graphics.polygon("fill",wall.body:getWorldPoints(wall.shape:getPoints()))
+  local px,py = player.body:getPosition()
+  -- scale (sx,sy) is by percentage
+  player.animation:draw(sprites.player_sheet,px,py,nil,0.25*player.direction,0.25,130,300)
+
+  love.graphics.polygon("line",player.body:getWorldPoints(player.shape:getPoints()))
+  love.graphics.polygon("fill",wall.body:getWorldPoints(wall.shape:getPoints()))
 end
 
 love.keypressed = function (key) -- pressed once
-  if key == "up" then
-    -- we want to query right underneath the player to see if he can jump (grounded)
-    local data = queryBoxArea(world,player.body:getX(),player.body:getY(),player.body:getX()+50,player.body:getY()+50,"wall")
-    if #data > 0 then
+  if key == "up" and player.grounded then
       player.body:applyLinearImpulse(0,-1000)
-    end
   end
 end
 
