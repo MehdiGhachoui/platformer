@@ -1,90 +1,44 @@
 local anim8 = require "lib.anim8"
+local player = require "player"
 
-local world
 local grid
-local player = {}
 local wall = {}
-local sprites={}
-local animations = {}
 
 love.load = function ()
-  world = love.physics.newWorld(0,500,false) -- platformers need a gravity - y - value like sup.mario it's always applied
+  World = love.physics.newWorld(0,500,false) -- platformers need a gravity - y - value like sup.mario it's always applied
 
-  sprites.player_sheet = love.graphics.newImage('sprites/playerSheet.png')
+  Sprites= {}
+  Sprites.player_sheet = love.graphics.newImage('sprites/playerSheet.png')
 
   -- grid is we split sprite sheet into individual image
   -- arg_1 : the width of each image on the sprite sheet - the width of this one is 9210 divided by 15 numb of image per columun
   -- arg_2 : the height  of each image on the sprite sheet - the width of this one is 1692 divided by 3 numb of rows
-  grid = anim8.newGrid(614,564,sprites.player_sheet:getWidth(),sprites.player_sheet:getHeight())
+  grid = anim8.newGrid(614,564,Sprites.player_sheet:getWidth(),Sprites.player_sheet:getHeight())
 
   -- arg_1 : column and row included in this animation
   -- arg_2 : time between each frame ,i.e: how fast we want this animation to run
   -- follow up : each frame of the image gonna stick for X seconds
-  animations.idle = anim8.newAnimation(grid('1-15',1),0.05)
-  animations.jump = anim8.newAnimation(grid('1-7',2),0.05)
-  animations.run = anim8.newAnimation(grid('1-15',3),0.05)
+  Animations  = {}
+  Animations.idle = anim8.newAnimation(grid('1-15',1),0.05)
+  Animations.jump = anim8.newAnimation(grid('1-7',2),0.05)
+  Animations.run = anim8.newAnimation(grid('1-15',3),0.05)
 
-  player.body = love.physics.newBody(world,300,100,"dynamic")
-  player.shape = love.physics.newRectangleShape(50,100) -- only  need the width and height , create the offset at center
-  player.fixture = love.physics.newFixture(player.body,player.shape)
-  player.body:setFixedRotation(true) -- so the player doesn't rotate when leaving the platform
-  player.fixture:setUserData("player")
-  player.animation = animations.idle
-  player.direction = 1
-  player.isMoving = false
-  player.grounded = true
+  player:load()
 
-  wall.body = love.physics.newBody(world,300,300,"static") -- not affected by gravity
+  wall.body = love.physics.newBody(World,300,300,"static") -- not affected by gravity
   wall.shape = love.physics.newRectangleShape(200,50) --- only  need the width and height , create the offset at center
   wall.fixture = love.physics.newFixture(wall.body,wall.shape)
   wall.fixture:setUserData("wall")
 end
 
 love.update = function (dt)
-  world:update(dt)
-  world:setCallbacks(begin_contact,end_contact,pre_solve,post_solve)
-  player.isMoving = false
-
-  -- we want to query right underneath the player to see if he can jump (grounded)
-  local data = queryBoxArea(world,player.body:getX()-25,player.body:getY()+50,player.body:getX()+25,player.body:getY()+50,"wall") -- offset already at the center
-  if #data > 0 then
-    player.grounded = true
-  else
-    player.grounded = false
-  end
-
-  local px,py = player.body:getPosition()
-  if love.keyboard.isDown("right") then
-    player.body:setX(px + 100*dt)
-    player.direction = 1
-    player.isMoving = true
-  end
-  if love.keyboard.isDown("left") then
-    player.body:setX(px - 100*dt)
-    player.direction = -1
-    player.isMoving = true
-  end
-
-  if player.grounded then
-    if player.isMoving then
-      player.animation = animations.run
-    else
-      player.animation = animations.idle
-    end
-  else
-    player.animation = animations.jump
-  end
-
-
-  player.animation:update(dt)
+  World:update(dt)
+  World:setCallbacks(begin_contact,end_contact,pre_solve,post_solve)
+  player:update(dt)
 end
 
 love.draw = function ()
-
-  local px,py = player.body:getPosition()
-  -- scale (sx,sy) is by percentage
-  player.animation:draw(sprites.player_sheet,px,py,nil,0.25*player.direction,0.25,130,300)
-
+  player:draw()
   love.graphics.polygon("line",player.body:getWorldPoints(player.shape:getPoints()))
   love.graphics.polygon("fill",wall.body:getWorldPoints(wall.shape:getPoints()))
 end
@@ -97,7 +51,7 @@ end
 
 begin_contact = function (a,b,col) -- gets called when two fixtures start overlapping (two objects collide).
 
-  local x,y = col:getNormal()
+  -- local x,y = col:getNormal()
   --print("collision between "..a:getUserData().." and "..b:getUserData().." with vector normal of x:"..x..",y:"..y)
 end
 
