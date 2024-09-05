@@ -1,12 +1,14 @@
 local anim8 = require "lib.anim8"
+local sti = require "lib.sti"
 local player = require "player"
 
 local grid
 local wall = {}
+local platforms = {}
 
 love.load = function ()
   World = love.physics.newWorld(0,500,false) -- platformers need a gravity - y - value like sup.mario it's always applied
-
+  load_map()
   Sprites= {}
   Sprites.player_sheet = love.graphics.newImage('sprites/playerSheet.png')
 
@@ -25,22 +27,24 @@ love.load = function ()
 
   player:load()
 
-  wall.body = love.physics.newBody(World,300,300,"static") -- not affected by gravity
-  wall.shape = love.physics.newRectangleShape(200,50) --- only  need the width and height , create the offset at center
-  wall.fixture = love.physics.newFixture(wall.body,wall.shape)
-  wall.fixture:setUserData("wall")
+  -- wall.body = love.physics.newBody(World,300,300,"static") -- not affected by gravity
+  -- wall.shape = love.physics.newRectangleShape(200,50) --- only  need the width and height , create the offset at center
+  -- wall.fixture = love.physics.newFixture(wall.body,wall.shape)
+  -- wall.fixture:setUserData("wall")
 end
 
 love.update = function (dt)
   World:update(dt)
-  World:setCallbacks(begin_contact,end_contact,pre_solve,post_solve)
+  GameMap:update(dt)
+  -- World:setCallbacks(begin_contact,end_contact,pre_solve,post_solve)
   player:update(dt)
 end
 
 love.draw = function ()
+  GameMap:drawLayer(GameMap.layers['Tile Layer 1'])
   player:draw()
   love.graphics.polygon("line",player.body:getWorldPoints(player.shape:getPoints()))
-  love.graphics.polygon("fill",wall.body:getWorldPoints(wall.shape:getPoints()))
+  -- love.graphics.polygon("fill",wall.body:getWorldPoints(wall.shape:getPoints()))
 end
 
 love.keypressed = function (key) -- pressed once
@@ -49,23 +53,12 @@ love.keypressed = function (key) -- pressed once
   end
 end
 
-begin_contact = function (a,b,col) -- gets called when two fixtures start overlapping (two objects collide).
-
-  -- local x,y = col:getNormal()
-  --print("collision between "..a:getUserData().." and "..b:getUserData().." with vector normal of x:"..x..",y:"..y)
+begin_contact = function (a,b,col)
+  player.begin_contact(a,b,col)
 end
 
-end_contact = function (a,b,col) -- gets called when two fixtures stop overlapping (two objects disconnect).
-
-  --print("end of collision between"..a:getUserData().." and "..b:getUserData())
-end
-
-pre_solve = function (a,b,col) --  is called just before a frame is resolved for a current collision (while the objects are touching)
-  --print("object "..a:getUserData().." and "..b:getUserData().." are touching ")
-end
-
-post_solve = function (a,b,col) -- is called just after a frame is resolved for a current collision.
-
+end_contact = function (a,b,col)
+  player.end_contact(a,b,col)
 end
 
 function queryBoxArea(world,x1,y1,x2,y2,collider)
@@ -79,4 +72,22 @@ function queryBoxArea(world,x1,y1,x2,y2,collider)
   end
   world:queryBoundingBox(x1,y1,x2,y2,callback) --
   return colls
+end
+
+function spawn_platform(id,x,y,width,height)
+  local platform = {}
+  if width > 0 and height > 0 then
+    platform.body = love.physics.newBody(World,x,y,"static") -- not affected by gravity
+    platform.shape = love.physics.newRectangleShape(width,height) --- only  need the width and height , create the offset at center
+    platform.fixture = love.physics.newFixture(platform.body,platform.shape)
+    platform.fixture:setUserData("platform")
+    -- table.insert(platforms,platform)
+  end
+end
+
+function load_map()
+  GameMap = sti("map/level_1.lua")
+  for i, object in pairs(GameMap.layers['platforms'].objects) do
+    spawn_platform(i,object.x,object.y,object.width,object.height)
+  end
 end

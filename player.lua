@@ -50,10 +50,29 @@ function Player:update(dt)
 end
 
 
-function Player:draw ()
+function Player:draw()
   local px,py = self.body:getPosition()
   -- scale (sx,sy) is by percentage
   self.animation:draw(Sprites.player_sheet,px,py,nil,0.25*self.direction,0.25,130,300)
+end
+
+Player.begin_contact= function(a,b,col) -- gets called when two fixtures start overlapping (two objects collide).
+
+  -- local x,y = col:getNormal()
+  --print("collision between "..a:getUserData().." and "..b:getUserData().." with vector normal of x:"..x..",y:"..y)
+end
+
+Player.end_contact = function (a,b,col) -- gets called when two fixtures stop overlapping (two objects disconnect).
+
+  --print("end of collision between"..a:getUserData().." and "..b:getUserData())
+end
+
+Player.pre_solve = function (a,b,col) --  is called just before a frame is resolved for a current collision (while the objects are touching)
+  --print("object "..a:getUserData().." and "..b:getUserData().." are touching ")
+end
+
+Player.post_solve = function (a,b,col) -- is called just after a frame is resolved for a current collision.
+
 end
 
 return Player
