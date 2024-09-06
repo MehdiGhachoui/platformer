@@ -6,6 +6,7 @@ function Player:load()
   self.fixture = love.physics.newFixture(self.body,self.shape)
   self.body:setFixedRotation(true) -- so the self doesn't rotate when leaving the platform
   self.fixture:setUserData("self")
+
   self.animation = Animations.idle
   self.direction = 1
   self.isMoving = false
@@ -16,21 +17,20 @@ function Player:update(dt)
   self.isMoving = false
 
   -- we want to query right underneath the player to see if he can jump (grounded)
-  local data = queryBoxArea(World,self.body:getX()-25,self.body:getY()+50,self.body:getX()+25,self.body:getY()+50,"wall") -- offset already at the center
+  local data = queryBoxArea(World,self.body:getX()-25,self.body:getY()+50,self.body:getX()+25,self.body:getY()+50,"platform") -- offset already at the center
   if #data > 0 then
     self.grounded = true
   else
     self.grounded = false
   end
-
   local px,py = self.body:getPosition()
   if love.keyboard.isDown("right") then
-    self.body:setX(px + 100*dt)
+    self.body:setX(px + 300*dt)
     self.direction = 1
     self.isMoving = true
   end
   if love.keyboard.isDown("left") then
-    self.body:setX(px - 100*dt)
+    self.body:setX(px - 300*dt)
     self.direction = -1
     self.isMoving = true
   end

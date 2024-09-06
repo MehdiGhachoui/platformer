@@ -1,9 +1,10 @@
 local anim8 = require "lib.anim8"
 local sti = require "lib.sti"
+local camera = require "lib.camera"
 local player = require "player"
 
 local grid
-local wall = {}
+local cam = camera()
 local platforms = {}
 
 love.load = function ()
@@ -26,11 +27,6 @@ love.load = function ()
   Animations.run = anim8.newAnimation(grid('1-15',3),0.05)
 
   player:load()
-
-  -- wall.body = love.physics.newBody(World,300,300,"static") -- not affected by gravity
-  -- wall.shape = love.physics.newRectangleShape(200,50) --- only  need the width and height , create the offset at center
-  -- wall.fixture = love.physics.newFixture(wall.body,wall.shape)
-  -- wall.fixture:setUserData("wall")
 end
 
 love.update = function (dt)
@@ -38,18 +34,25 @@ love.update = function (dt)
   GameMap:update(dt)
   -- World:setCallbacks(begin_contact,end_contact,pre_solve,post_solve)
   player:update(dt)
+
+  cam:lookAt(player.body:getX(),love.graphics.getHeight()/2)
 end
 
 love.draw = function ()
-  GameMap:drawLayer(GameMap.layers['Tile Layer 1'])
-  player:draw()
-  love.graphics.polygon("line",player.body:getWorldPoints(player.shape:getPoints()))
-  -- love.graphics.polygon("fill",wall.body:getWorldPoints(wall.shape:getPoints()))
+  cam:attach()
+    GameMap:drawLayer(GameMap.layers['Tile Layer 1'])
+    player:draw()
+    love.graphics.polygon("line",player.body:getWorldPoints(player.shape:getPoints()))
+    for _, p in pairs(platforms) do
+      love.graphics.polygon("line",p.body:getWorldPoints(p.shape:getPoints()))
+    end
+  cam:detach()
+
 end
 
 love.keypressed = function (key) -- pressed once
   if key == "up" and player.grounded then
-      player.body:applyLinearImpulse(0,-1000)
+      player.body:applyLinearImpulse(0,-2000)
   end
 end
 
@@ -74,20 +77,22 @@ function queryBoxArea(world,x1,y1,x2,y2,collider)
   return colls
 end
 
-function spawn_platform(id,x,y,width,height)
+function spawn_platform(x,y,width,height)
   local platform = {}
   if width > 0 and height > 0 then
     platform.body = love.physics.newBody(World,x,y,"static") -- not affected by gravity
-    platform.shape = love.physics.newRectangleShape(width,height) --- only  need the width and height , create the offset at center
+    --- we change the origin to upper left because that's where tile draw to change that Maybe change H.O & V.O in Tile Layer
+    platform.shape = love.physics.newRectangleShape(width/2,height/2,width,height)
     platform.fixture = love.physics.newFixture(platform.body,platform.shape)
     platform.fixture:setUserData("platform")
-    -- table.insert(platforms,platform)
+
+    table.insert(platforms,platform)
   end
 end
 
 function load_map()
   GameMap = sti("map/level_1.lua")
-  for i, object in pairs(GameMap.layers['platforms'].objects) do
-    spawn_platform(i,object.x,object.y,object.width,object.height)
+  for _, object in pairs(GameMap.layers['platforms'].objects) do
+    spawn_platform(object.x,object.y,object.width,object.height)
   end
 end
