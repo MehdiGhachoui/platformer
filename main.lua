@@ -2,6 +2,7 @@ local anim8 = require "lib.anim8"
 local sti = require "lib.sti"
 local camera = require "lib.camera"
 local player = require "player"
+local enemy = require "enemy"
 
 local grid
 local cam = camera()
@@ -27,6 +28,7 @@ love.load = function ()
   Animations.run = anim8.newAnimation(grid('1-15',3),0.05)
 
   player:load()
+  enemy:load(1100,384)
 end
 
 love.update = function (dt)
@@ -34,6 +36,7 @@ love.update = function (dt)
   GameMap:update(dt)
   -- World:setCallbacks(begin_contact,end_contact,pre_solve,post_solve)
   player:update(dt)
+  enemy:update(dt)
 
   cam:lookAt(player.body:getX(),love.graphics.getHeight()/2)
 end
@@ -42,11 +45,14 @@ love.draw = function ()
   cam:attach()
     GameMap:drawLayer(GameMap.layers['Tile Layer 1'])
     player:draw()
+    enemy:draw()
     love.graphics.polygon("line",player.body:getWorldPoints(player.shape:getPoints()))
     for _, p in pairs(platforms) do
       love.graphics.polygon("line",p.body:getWorldPoints(p.shape:getPoints()))
     end
   cam:detach()
+
+
 
 end
 
@@ -64,7 +70,7 @@ end_contact = function (a,b,col)
   player.end_contact(a,b,col)
 end
 
-function queryBoxArea(world,x1,y1,x2,y2,collider)
+function queryBoxArea(x1,y1,x2,y2,collider)
   -- local col_1,col_2 = table.unpack(colliders)
   local colls = {}
   local function callback(fixture)
@@ -73,7 +79,7 @@ function queryBoxArea(world,x1,y1,x2,y2,collider)
     end
     return true
   end
-  world:queryBoundingBox(x1,y1,x2,y2,callback) --
+  World:queryBoundingBox(x1,y1,x2,y2,callback) --
   return colls
 end
 

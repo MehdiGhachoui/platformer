@@ -5,7 +5,7 @@ function Player:load()
   self.shape = love.physics.newRectangleShape(50,100) -- only  need the width and height , create the offset at center
   self.fixture = love.physics.newFixture(self.body,self.shape)
   self.body:setFixedRotation(true) -- so the self doesn't rotate when leaving the platform
-  self.fixture:setUserData("self")
+  self.fixture:setUserData("player")
 
   self.animation = Animations.idle
   self.direction = 1
@@ -17,7 +17,7 @@ function Player:update(dt)
   self.isMoving = false
 
   -- we want to query right underneath the player to see if he can jump (grounded)
-  local data = queryBoxArea(World,self.body:getX()-25,self.body:getY()+50,self.body:getX()+25,self.body:getY()+50,"platform") -- offset already at the center
+  local data = queryBoxArea(self.body:getX()-25,self.body:getY()+50,self.body:getX()+25,self.body:getY()+50,"platform") -- offset already at the center
   if #data > 0 then
     self.grounded = true
   else
