@@ -10,14 +10,16 @@ local platforms = {}
 
 love.load = function ()
   World = love.physics.newWorld(0,500,false) -- platformers need a gravity - y - value like sup.mario it's always applied
-  load_map()
+
   Sprites= {}
   Sprites.player_sheet = love.graphics.newImage('sprites/playerSheet.png')
+  Sprites.enemy_sheet = love.graphics.newImage('sprites/enemySheet.png')
 
   -- grid is we split sprite sheet into individual image
   -- arg_1 : the width of each image on the sprite sheet - the width of this one is 9210 divided by 15 numb of image per columun
   -- arg_2 : the height  of each image on the sprite sheet - the width of this one is 1692 divided by 3 numb of rows
   grid = anim8.newGrid(614,564,Sprites.player_sheet:getWidth(),Sprites.player_sheet:getHeight())
+  enemy_grid = anim8.newGrid(100,79,Sprites.enemy_sheet:getWidth(),Sprites.enemy_sheet:getHeight())
 
   -- arg_1 : column and row included in this animation
   -- arg_2 : time between each frame ,i.e: how fast we want this animation to run
@@ -26,15 +28,16 @@ love.load = function ()
   Animations.idle = anim8.newAnimation(grid('1-15',1),0.05)
   Animations.jump = anim8.newAnimation(grid('1-7',2),0.05)
   Animations.run = anim8.newAnimation(grid('1-15',3),0.05)
+  Animations.enemy = anim8.newAnimation(enemy_grid('1-2',1),0.03)
 
-  player:load()
-  enemy:load(1100,384)
+  load_map()
+    enemy:load(400,100)
+    enemy:load(500,100)
 end
 
 love.update = function (dt)
   World:update(dt)
   GameMap:update(dt)
-  -- World:setCallbacks(begin_contact,end_contact,pre_solve,post_solve)
   player:update(dt)
   enemy:update(dt)
 
@@ -51,9 +54,6 @@ love.draw = function ()
       love.graphics.polygon("line",p.body:getWorldPoints(p.shape:getPoints()))
     end
   cam:detach()
-
-
-
 end
 
 love.keypressed = function (key) -- pressed once
@@ -101,4 +101,10 @@ function load_map()
   for _, object in pairs(GameMap.layers['platforms'].objects) do
     spawn_platform(object.x,object.y,object.width,object.height)
   end
+
+  -- for _, object in pairs(GameMap.layers['enemies'].objects) do
+  --   enemy:load(object.x,object.y)
+  -- end
+
+  player:load()
 end
