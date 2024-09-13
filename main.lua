@@ -31,8 +31,6 @@ love.load = function ()
   Animations.enemy = anim8.newAnimation(enemy_grid('1-2',1),0.03)
 
   load_map()
-    enemy:load(400,100)
-    enemy:load(500,100)
 end
 
 love.update = function (dt)
@@ -49,10 +47,7 @@ love.draw = function ()
     GameMap:drawLayer(GameMap.layers['Tile Layer 1'])
     player:draw()
     enemy:draw()
-    love.graphics.polygon("line",player.body:getWorldPoints(player.shape:getPoints()))
-    for _, p in pairs(platforms) do
-      love.graphics.polygon("line",p.body:getWorldPoints(p.shape:getPoints()))
-    end
+    -- love.graphics.polygon("line",player.body:getWorldPoints(player.shape:getPoints()))
   cam:detach()
 end
 
@@ -102,9 +97,9 @@ function load_map()
     spawn_platform(object.x,object.y,object.width,object.height)
   end
 
-  -- for _, object in pairs(GameMap.layers['enemies'].objects) do
-  --   enemy:load(object.x,object.y)
-  -- end
+  for _, object in pairs(GameMap.layers['enemies'].objects) do
+    enemy:load(object.x,object.y)
+  end
 
   player:load()
 end
