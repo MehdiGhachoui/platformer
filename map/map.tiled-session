@@ -28,5 +28,9 @@
     "project": "map.tiled-project",
     "recentFiles": [
         "level_1.tmx"
-    ]
+    ],
+    "tileset.tileSize": {
+        "height": 64,
+        "width": 64
+    }
 }
