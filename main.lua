@@ -5,6 +5,7 @@ local player = require "player"
 local enemy = require "enemy"
 
 local grid
+local flag = {}
 local cam = camera()
 local platforms = {}
 
@@ -40,6 +41,10 @@ love.update = function (dt)
   enemy:update(dt)
 
   cam:lookAt(player.body:getX(),love.graphics.getHeight()/2)
+  local flag_col = queryBoxArea(flag.x,flag.y,flag.x+32,flag.y+32 ,"player")
+  if #flag_col > 0 then
+    print("Yay!!!")
+  end
 end
 
 love.draw = function ()
@@ -48,6 +53,7 @@ love.draw = function ()
     player:draw()
     enemy:draw()
     -- love.graphics.polygon("line",player.body:getWorldPoints(player.shape:getPoints()))
+    love.graphics.rectangle("line",flag.x,flag.y,32,32)
   cam:detach()
 end
 
@@ -101,5 +107,9 @@ function load_map()
     enemy:load(object.x,object.y)
   end
 
+  for _, object in pairs(GameMap.layers['flag'].objects) do
+    flag.x = object.x
+    flag.y = object.y
+  end
   player:load()
 end

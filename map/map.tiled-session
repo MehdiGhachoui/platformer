@@ -8,7 +8,7 @@
         },
         "level_1.tmx": {
             "scale": 0.4163671875,
-            "selectedLayer": 2,
+            "selectedLayer": 3,
             "viewCenter": {
                 "x": 1276.5174969509333,
                 "y": 378.2718829158457
@@ -29,6 +29,7 @@
     "recentFiles": [
         "level_1.tmx"
     ],
+    "tileset.embedInMap": true,
     "tileset.tileSize": {
         "height": 64,
         "width": 64

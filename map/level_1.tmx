@@ -6,6 +6,9 @@
  <tileset firstgid="1" name="Platform_2" tilewidth="64" tileheight="64" tilecount="9" columns="3">
   <image source="../sprites/tileset.png" width="192" height="192"/>
  </tileset>
+ <tileset firstgid="10" name="flag" tilewidth="64" tileheight="64" tilecount="1" columns="1">
+  <image source="../sprites/flag.png" width="64" height="64"/>
+ </tileset>
  <layer id="1" name="Tile Layer 1" width="40" height="12">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -14,7 +17,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,8,8,8,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,8,8,8,9,0,0,0,0,0,0,0,0,0,0,0,0,0,10,0,0,0,0,0,
 0,0,1,2,2,2,2,2,2,2,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,7,8,8,9,0,0,0,1,2,2,2,2,3,0,0,
 0,0,4,5,5,5,5,5,5,5,5,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,5,5,5,5,6,0,0,
 0,0,4,5,5,5,5,5,5,5,5,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,5,5,5,5,6,0,0,
@@ -27,15 +30,12 @@
   <object id="3" x="1024" y="384" width="320" height="64"/>
   <object id="4" x="1600" y="448" width="256" height="64"/>
   <object id="5" x="2048" y="448" width="384" height="320"/>
-  <object id="6" x="576" y="960"/>
  </objectgroup>
  <objectgroup id="4" name="enemies">
   <object id="7" x="1152" y="320" width="64" height="64"/>
   <object id="8" x="1728" y="384" width="64" height="64"/>
-  <object id="9" x="2048" y="960"/>
  </objectgroup>
- <objectgroup id="5" name="flag" visible="0">
+ <objectgroup id="5" name="flag">
   <object id="13" x="2176" y="384" width="64" height="64"/>
-  <object id="14" x="1920" y="1024"/>
  </objectgroup>
 </map>
