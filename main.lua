@@ -15,6 +15,7 @@ love.load = function ()
   Sprites= {}
   Sprites.player_sheet = love.graphics.newImage('sprites/playerSheet.png')
   Sprites.enemy_sheet = love.graphics.newImage('sprites/enemySheet.png')
+  Sprites.background = love.graphics.newImage('sprites/background.png')
 
   -- grid is we split sprite sheet into individual image
   -- arg_1 : the width of each image on the sprite sheet - the width of this one is 9210 divided by 15 numb of image per columun
@@ -48,6 +49,7 @@ love.update = function (dt)
 end
 
 love.draw = function ()
+  love.graphics.draw(Sprites.background,0,0)
   cam:attach()
     GameMap:drawLayer(GameMap.layers['Tile Layer 1'])
     player:draw()

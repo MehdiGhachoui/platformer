@@ -8,13 +8,16 @@
         },
         "level_1.tmx": {
             "scale": 0.4163671875,
-            "selectedLayer": 3,
+            "selectedLayer": 1,
             "viewCenter": {
                 "x": 1276.5174969509333,
                 "y": 378.2718829158457
             }
         },
         "level_1.tmx#Platform_2": {
+            "scaleInDock": 1
+        },
+        "level_1.tmx#flag": {
             "scaleInDock": 1
         }
     },
