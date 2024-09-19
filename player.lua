@@ -1,7 +1,13 @@
 local Player = {}
 
+
+function Player:setPosition(x,y)
+  Player.x = x
+  Player.y = y
+end
+
 function Player:load()
-  self.body = love.physics.newBody(World,300,100,"dynamic")
+  self.body = love.physics.newBody(World,self.x,self.y,"dynamic")
   self.shape = love.physics.newRectangleShape(50,100) -- only  need the width and height , create the offset at center
   self.fixture = love.physics.newFixture(self.body,self.shape)
   self.body:setFixedRotation(true) -- so the self doesn't rotate when leaving the platform

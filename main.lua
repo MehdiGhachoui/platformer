@@ -101,14 +101,15 @@ end
 
 function load_map()
   GameMap = sti("map/level_1.lua")
+  for _, object in pairs(GameMap.layers['player'].objects) do
+    player:setPosition(object.x,object.y)
+  end
   for _, object in pairs(GameMap.layers['platforms'].objects) do
     spawn_platform(object.x,object.y,object.width,object.height)
   end
-
   for _, object in pairs(GameMap.layers['enemies'].objects) do
     enemy:load(object.x,object.y)
   end
-
   for _, object in pairs(GameMap.layers['flag'].objects) do
     flag.x = object.x
     flag.y = object.y
