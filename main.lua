@@ -1,6 +1,7 @@
 local anim8 = require "lib.anim8"
 local sti = require "lib.sti"
 local camera = require "lib.camera"
+local visualizer = require "lib.visualizer"
 local player = require "player"
 local enemy = require "enemy"
 
@@ -49,13 +50,24 @@ love.update = function (dt)
 end
 
 love.draw = function ()
+
+
   love.graphics.draw(Sprites.background,0,0)
   cam:attach()
+
     GameMap:drawLayer(GameMap.layers['Tile Layer 1'])
     player:draw()
     enemy:draw()
-    -- love.graphics.polygon("line",player.body:getWorldPoints(player.shape:getPoints()))
-    love.graphics.rectangle("line",flag.x,flag.y,32,32)
+    visualizer().drawBody(World)
+
+    for _, contact in pairs(World:getContacts()) do
+      local x1, y1, x2, y2 = contact:getPositions()
+      if x1 and x2 then
+          love.graphics.rectangle('line', x1, y1, x2-x1, y2-y1 )
+      end
+
+    end
+
   cam:detach()
 end
 

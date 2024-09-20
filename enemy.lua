@@ -3,7 +3,7 @@ local Enemy = {}
 function Enemy:load(x,y)
   local enemy = setmetatable({},Enemy)
   enemy.body = love.physics.newBody(World,x,y,"dynamic")
-  enemy.shape = love.physics.newRectangleShape(70,50) -- only  need the width and height , create the offset at center
+  enemy.shape = love.physics.newRectangleShape(70,90) -- only  need the width and height , create the offset at center
   enemy.fixture = love.physics.newFixture(enemy.body,enemy.shape)
   enemy.fixture:setUserData('enemy')
   enemy.body:setFixedRotation(true) -- so the enemy doesn't rotate when leaving the platform
