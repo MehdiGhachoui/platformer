@@ -16,21 +16,17 @@ local function drawBody(world)
   end
 end
 
-local function drawContact(world)
-   for _, contact in pairs(world:getContacts()) do
-      local x1, y1, x2, y2 = contact:getPositions()
-      if x1 then
-          love.graphics.rectangle('line', x1, y1, 30, 30)
-      end
-      if x2 then
-          love.graphics.rectangle('line', x2, y2, 30, 30)
-      end
-    end
-end
+-- for _, contact in pairs(World:getContacts()) do
+    --   local x1, y1, x2, y2 = contact:getPositions()
+    --   if x1 and x2 then
+    --       love.graphics.rectangle('line', x1, y1, x2-x1, y2-y1 )
+    --   end
+
+    -- end
+
 
 return function ()
   return {
   drawBody = drawBody,
-  drawContact = drawContact
 }
 end

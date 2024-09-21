@@ -50,24 +50,12 @@ love.update = function (dt)
 end
 
 love.draw = function ()
-
-
   love.graphics.draw(Sprites.background,0,0)
   cam:attach()
-
     GameMap:drawLayer(GameMap.layers['Tile Layer 1'])
     player:draw()
     enemy:draw()
     visualizer().drawBody(World)
-
-    for _, contact in pairs(World:getContacts()) do
-      local x1, y1, x2, y2 = contact:getPositions()
-      if x1 and x2 then
-          love.graphics.rectangle('line', x1, y1, x2-x1, y2-y1 )
-      end
-
-    end
-
   cam:detach()
 end
 
